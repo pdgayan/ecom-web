@@ -29,6 +29,8 @@ jobs:
         run: npm install
         
       - name: build the app
+        env:
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
         run: npm run build
 
     #   - name: Debug OIDC Token Claims
