@@ -1,52 +1,55 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useApp } from '../AppContext';
-import { AUTH_URL } from '../api';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useApp } from "../AppContext";
 
 export default function LoginPage() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError]       = useState('');
-  const [loading, setLoading]   = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [role, setRole] = useState("buyer");
   const { login } = useApp();
-  const navigate  = useNavigate();
+  const navigate = useNavigate();
 
-  async function handleSubmit(e) {
+  function handleSubmit(e) {
     e.preventDefault();
-    setError('');
-    setLoading(true);
-    try {
-      const res  = await fetch(`${AUTH_URL}/login`, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ username, password }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Login failed');
-      login(data.user, data.token);
-      navigate('/products');
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
+    const user = { id: username || role, username, role };
+    login(user, password || "demo-token");
+    navigate(role === "seller" ? "/dashboard" : "/products");
   }
 
   return (
-    <div className="login-wrapper">
-      <div className="login-box">
-        <h1>Welcome back 👋</h1>
-        <p>Sign in to continue to <strong>ShopMS</strong></p>
-
-        {error && <div className="error-msg">⚠️ {error}</div>}
+    <div className="auth-screen">
+      <div className="auth-panel">
+        <div className="eyebrow">Ecommerce demo</div>
+        <h1>Choose your role</h1>
+        <p>
+          Use any username and password. Seller goes to product management,
+          buyer goes to browsing.
+        </p>
 
         <form onSubmit={handleSubmit}>
+          <div className="role-switch">
+            <button
+              type="button"
+              className={role === "buyer" ? "role-chip active" : "role-chip"}
+              onClick={() => setRole("buyer")}
+            >
+              Buyer
+            </button>
+            <button
+              type="button"
+              className={role === "seller" ? "role-chip active" : "role-chip"}
+              onClick={() => setRole("seller")}
+            >
+              Seller
+            </button>
+          </div>
+
           <div className="form-group">
             <label>Username</label>
             <input
               type="text"
               value={username}
-              onChange={e => setUsername(e.target.value)}
+              onChange={(e) => setUsername(e.target.value)}
               placeholder="alice or bob"
               required
               autoFocus
@@ -57,19 +60,17 @@ export default function LoginPage() {
             <input
               type="password"
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="any password works"
               required
             />
           </div>
-          <button className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
-            {loading ? 'Signing in…' : 'Sign In'}
+          <button className="btn btn-primary btn-wide" type="submit">
+            Enter {role === "seller" ? "Seller Dashboard" : "Product Catalog"}
           </button>
         </form>
 
-        <p className="login-hint">
-          Demo users: <strong>alice</strong> / <strong>bob</strong> · any password
-        </p>
+        <p className="login-hint">Any username/password is accepted for now.</p>
       </div>
     </div>
   );

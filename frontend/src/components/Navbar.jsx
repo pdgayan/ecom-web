@@ -1,6 +1,6 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useApp } from '../AppContext';
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useApp } from "../AppContext";
 
 export default function Navbar() {
   const { user, logout } = useApp();
@@ -8,22 +8,45 @@ export default function Navbar() {
 
   function handleLogout() {
     logout();
-    navigate('/login');
+    navigate("/login");
   }
 
   return (
     <nav className="navbar">
-      <Link to="/products" className="navbar-brand">🛒 ShopMS</Link>
+      <Link
+        to={user?.role === "seller" ? "/dashboard" : "/products"}
+        className="navbar-brand"
+      >
+        Ecom Catalog
+      </Link>
 
-      {user && (
-        <div className="navbar-links">
-          <Link to="/products" className="nav-link">Products</Link>
-          <Link to="/cart"     className="nav-link">Cart</Link>
-          <Link to="/orders"   className="nav-link">Orders</Link>
-          <span className="nav-user">👤 {user.username}</span>
-          <button className="btn-logout" onClick={handleLogout}>Logout</button>
-        </div>
-      )}
+      <div className="navbar-links">
+        {!user && (
+          <Link to="/login" className="nav-link">
+            Login
+          </Link>
+        )}
+        {user?.role === "buyer" && (
+          <Link to="/products" className="nav-link">
+            Products
+          </Link>
+        )}
+        {user?.role === "seller" && (
+          <Link to="/dashboard" className="nav-link">
+            Dashboard
+          </Link>
+        )}
+        {user && (
+          <span className="nav-user">
+            {user.role}: {user.username}
+          </span>
+        )}
+        {user && (
+          <button className="btn-logout" onClick={handleLogout}>
+            Logout
+          </button>
+        )}
+      </div>
     </nav>
   );
 }
