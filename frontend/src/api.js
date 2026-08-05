@@ -1,5 +1,6 @@
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4002";
+const API_BASE = VITE_API_URL;
 
+//
 export const AUTH_URL = `${API_BASE}/auth`;
 export const CATALOG_URL = `${API_BASE}/catalog`;
 export const CART_URL = `${API_BASE}/cart`;
