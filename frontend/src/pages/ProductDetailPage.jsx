@@ -13,6 +13,9 @@ export default function ProductDetailPage() {
   const [adding, setAdding] = useState(false);
   const [msg, setMsg] = useState("");
   const [error, setError] = useState("");
+  function getFallbackImage(productId) {
+    return `https://picsum.photos/seed/${encodeURIComponent(productId)}/1200/800`;
+  }
 
   useEffect(() => {
     fetch(`${CATALOG_URL}/products/${id}`)
@@ -40,7 +43,6 @@ export default function ProductDetailPage() {
       setMsg("✅ Added to cart!");
     } catch {
       setMsg("❌ Could not add to cart.");
-    } finally {
       setAdding(false);
     }
   }
@@ -87,7 +89,15 @@ export default function ProductDetailPage() {
         ← Back to Products
       </Link>
       <div className="product-detail">
-        <img src={product.image_url} alt={product.name} />
+        <img
+          src={product.image_url || getFallbackImage(product.id)}
+          alt={product.name}
+          onError={(e) => {
+            const fallback = getFallbackImage(product.id);
+            if (e.currentTarget.src !== fallback)
+              e.currentTarget.src = fallback;
+          }}
+        />
         <div className="product-detail-info">
           <div className="category-tag">{product.category}</div>
           <h1>{product.name}</h1>
