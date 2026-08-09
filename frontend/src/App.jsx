@@ -3,6 +3,9 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AppProvider, useApp } from "./AppContext";
 import Navbar from "./components/Navbar";
 import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage"
+import ProfilePage from "./pages/ProfilePage";
+import LoginPage from "./pages/LoginPage";
 import ProductListPage from "./pages/ProductListPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import CartPage from "./pages/CartPage";
@@ -25,6 +28,9 @@ function AppRoutes() {
         <Routes>
           <Route path="/" element={<Navigate to={defaultRoute} replace />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/products" element={<ProductListPage />} />
           <Route path="/products/:id" element={<ProductDetailPage />} />
           <Route path="/cart" element={<CartPage />} />
