@@ -56,7 +56,7 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${AUTH_URL}/auth/register`, {
+      const response = await fetch(`${AUTH_URL}/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

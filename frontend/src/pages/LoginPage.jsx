@@ -31,7 +31,7 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${AUTH_URL}/auth/login`, {
+      const response = await fetch(`${AUTH_URL}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
