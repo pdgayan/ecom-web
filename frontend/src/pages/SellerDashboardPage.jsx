@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { CATALOG_URL } from "../api";
+import { useApp } from "../AppContext";
 
 const emptyForm = {
   id: "",
@@ -71,6 +72,7 @@ function formatFormValue(product) {
 }
 
 export default function SellerDashboardPage() {
+  const { token } = useApp();
   const [products, setProducts] = useState([]);
   const [formData, setFormData] = useState(emptyForm);
   const [loading, setLoading] = useState(true);
@@ -127,7 +129,10 @@ export default function SellerDashboardPage() {
           : `${CATALOG_URL}/products`,
         {
           method: editing ? "PUT" : "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
           body: JSON.stringify(payload),
         },
       );
@@ -153,6 +158,11 @@ export default function SellerDashboardPage() {
     try {
       const response = await fetch(`${CATALOG_URL}/products/${id}`, {
         method: "DELETE",
+        headers: token
+          ? {
+              Authorization: `Bearer ${token}`,
+            }
+          : {},
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Delete failed");

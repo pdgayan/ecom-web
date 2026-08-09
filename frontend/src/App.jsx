@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AppProvider, useApp } from "./AppContext";
 import Navbar from "./components/Navbar";
 import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage"
+import RegisterPage from "./pages/RegisterPage";
 import ProfilePage from "./pages/ProfilePage";
 import ProductListPage from "./pages/ProductListPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
@@ -16,8 +16,9 @@ import SellerDashboardPage from "./pages/SellerDashboardPage";
 //
 function AppRoutes() {
   const { user } = useApp();
+  const isSellerRole = user?.role === "seller" || user?.role === "admin";
   const defaultRoute = user
-    ? user.role === "seller"
+    ? isSellerRole
       ? "/dashboard"
       : "/products"
     : "/login";

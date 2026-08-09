@@ -6,6 +6,7 @@ import { AUTH_URL } from "../api";
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("buyer");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useApp();
@@ -36,7 +37,7 @@ export default function LoginPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email: email.trim(), password }),
+        body: JSON.stringify({ email: email.trim(), password, role }),
       });
 
       const data = await response.json();
@@ -66,6 +67,41 @@ export default function LoginPage() {
         {error && <div className="form-error">{error}</div>}
 
         <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Login as</label>
+            <div
+              className="role-switch"
+              role="radiogroup"
+              aria-label="Login role"
+            >
+              <label
+                className={`role-chip ${role === "buyer" ? "active" : ""}`}
+              >
+                <input
+                  type="radio"
+                  name="role"
+                  value="buyer"
+                  checked={role === "buyer"}
+                  onChange={(e) => setRole(e.target.value)}
+                  style={{ display: "none" }}
+                />
+                Buyer
+              </label>
+              <label
+                className={`role-chip ${role === "seller" ? "active" : ""}`}
+              >
+                <input
+                  type="radio"
+                  name="role"
+                  value="seller"
+                  checked={role === "seller"}
+                  onChange={(e) => setRole(e.target.value)}
+                  style={{ display: "none" }}
+                />
+                Seller
+              </label>
+            </div>
+          </div>
           <div className="form-group">
             <label>Email</label>
             <input

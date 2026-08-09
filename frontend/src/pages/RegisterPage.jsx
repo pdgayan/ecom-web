@@ -13,6 +13,7 @@ const initialForm = {
 
 export default function RegisterPage() {
   const [form, setForm] = useState(initialForm);
+  const [role, setRole] = useState("buyer");
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -67,6 +68,7 @@ export default function RegisterPage() {
           email: form.email.trim(),
           password: form.password,
           phone: form.phone.trim(),
+          role,
         }),
       });
 
@@ -99,11 +101,44 @@ export default function RegisterPage() {
         <p>Fill in your details to get started.</p>
 
         {error && <div className="form-error">{error}</div>}
-        {successMessage && (
-          <div className="form-success">{successMessage}</div>
-        )}
+        {successMessage && <div className="form-success">{successMessage}</div>}
 
         <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Register as</label>
+            <div
+              className="role-switch"
+              role="radiogroup"
+              aria-label="Register role"
+            >
+              <label
+                className={`role-chip ${role === "buyer" ? "active" : ""}`}
+              >
+                <input
+                  type="radio"
+                  name="register-role"
+                  value="buyer"
+                  checked={role === "buyer"}
+                  onChange={(e) => setRole(e.target.value)}
+                  style={{ display: "none" }}
+                />
+                Buyer
+              </label>
+              <label
+                className={`role-chip ${role === "seller" ? "active" : ""}`}
+              >
+                <input
+                  type="radio"
+                  name="register-role"
+                  value="seller"
+                  checked={role === "seller"}
+                  onChange={(e) => setRole(e.target.value)}
+                  style={{ display: "none" }}
+                />
+                Seller
+              </label>
+            </div>
+          </div>
           <div className="form-row">
             <div className="form-group">
               <label>First Name</label>

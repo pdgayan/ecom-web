@@ -5,6 +5,8 @@ import { useApp } from "../AppContext";
 export default function Navbar() {
   const { user, logout } = useApp();
   const navigate = useNavigate();
+  const isSellerRole = user?.role === "seller" || user?.role === "admin";
+  const isBuyerRole = user?.role === "buyer" || user?.role === "customer";
 
   function handleLogout() {
     logout();
@@ -14,7 +16,7 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <Link
-        to={user?.role === "seller" ? "/dashboard" : "/products"}
+        to={isSellerRole ? "/dashboard" : "/products"}
         className="navbar-brand"
       >
         Ecom Catalog
@@ -26,12 +28,12 @@ export default function Navbar() {
             Login
           </Link>
         )}
-        {user?.role === "buyer" && (
+        {isBuyerRole && (
           <Link to="/products" className="nav-link">
             Products
           </Link>
         )}
-        {user?.role === "seller" && (
+        {isSellerRole && (
           <Link to="/dashboard" className="nav-link">
             Dashboard
           </Link>
