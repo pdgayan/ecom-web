@@ -86,7 +86,7 @@ export default function ProductDetailPage() {
   return (
     <>
       <Link to="/products" className="back-link">
-        ← Back to Products
+        ← Back to Menu
       </Link>
       <div className="product-detail">
         <img
@@ -110,7 +110,7 @@ export default function ProductDetailPage() {
               marginBottom: "1rem",
             }}
           >
-            {product.stock} in stock
+            {product.stock} available
           </p>
 
           <div className="qty-row">
@@ -141,14 +141,14 @@ export default function ProductDetailPage() {
               onClick={addToCart}
               disabled={adding}
             >
-              {adding ? "Adding…" : "Add to Cart"}
+              {adding ? "Adding…" : "Add to Basket"}
             </button>
             <button
               className="btn btn-success"
               onClick={buyNow}
               disabled={adding}
             >
-              {adding ? "Processing…" : "Buy Now"}
+              {adding ? "Processing…" : "Order Now"}
             </button>
             <button
               className="btn btn-outline"

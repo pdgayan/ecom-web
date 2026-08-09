@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { CATALOG_URL } from "../api";
 import { useApp } from "../AppContext";
+import { FOOD_CATEGORIES, formatCategoryLabel } from "../data/menuCategories";
 
 const emptyForm = {
   id: "",
@@ -70,6 +71,8 @@ function formatFormValue(product) {
     price: product.price ?? "",
   };
 }
+
+const FOOD_CATEGORY_OPTIONS = [...FOOD_CATEGORIES];
 
 export default function SellerDashboardPage() {
   const { token } = useApp();
@@ -177,17 +180,17 @@ export default function SellerDashboardPage() {
     <div className="dashboard-layout">
       <section className="dashboard-hero card">
         <div>
-          <div className="eyebrow">Seller dashboard</div>
-          <h1>Manage catalog products</h1>
+          <div className="eyebrow">Kitchen dashboard</div>
+          <h1>Manage menu items</h1>
           <p>
-            Add, edit, and delete products from the same page. No auth
-            complexity yet.
+            Add, edit, and delete dishes from the same page with a cleaner food
+            ordering workflow.
           </p>
         </div>
         <div className="dashboard-stats">
           <div className="stat-box">
             <span className="stat-value">{products.length}</span>
-            <span className="stat-label">Products</span>
+            <span className="stat-label">Dishes</span>
           </div>
           <div className="stat-box accent">
             <span className="stat-value">{editing ? "Edit" : "New"}</span>
@@ -199,7 +202,7 @@ export default function SellerDashboardPage() {
       <div className="dashboard-grid">
         <section className="card form-card">
           <div className="section-head">
-            <h2>{editing ? "Edit product" : "Add product"}</h2>
+            <h2>{editing ? "Edit dish" : "Add dish"}</h2>
             {editing && (
               <button
                 type="button"
@@ -217,7 +220,7 @@ export default function SellerDashboardPage() {
           <form className="product-form" onSubmit={handleSubmit}>
             <div className="grid-two">
               <label className="form-field">
-                <span>Name</span>
+                <span>Dish name</span>
                 <input
                   name="name"
                   value={formData.name}
@@ -226,7 +229,7 @@ export default function SellerDashboardPage() {
                 />
               </label>
               <label className="form-field">
-                <span>Manufacturer</span>
+                <span>Brand / restaurant</span>
                 <input
                   name="manufacturer"
                   value={formData.manufacturer}
@@ -235,11 +238,18 @@ export default function SellerDashboardPage() {
               </label>
               <label className="form-field">
                 <span>Category</span>
-                <input
+                <select
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
-                />
+                >
+                  <option value="">Select a category</option>
+                  {FOOD_CATEGORY_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.label}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
               </label>
               <label className="form-field">
                 <span>Category ID</span>
@@ -247,6 +257,7 @@ export default function SellerDashboardPage() {
                   name="categoryId"
                   value={formData.categoryId}
                   onChange={handleChange}
+                  placeholder="e.g. BURGER-01"
                 />
               </label>
               <label className="form-field">
@@ -283,7 +294,7 @@ export default function SellerDashboardPage() {
                 />
               </label>
               <label className="form-field">
-                <span>Lead time</span>
+                <span>Prep time</span>
                 <input
                   name="leadTime"
                   value={formData.leadTime}
@@ -398,7 +409,7 @@ export default function SellerDashboardPage() {
 
         <section className="card list-card">
           <div className="section-head">
-            <h2>Current products</h2>
+            <h2>Current dishes</h2>
             <button
               type="button"
               className="btn btn-outline btn-sm"
@@ -425,7 +436,7 @@ export default function SellerDashboardPage() {
                     <div className="admin-row-top">
                       <div>
                         <div className="eyebrow">
-                          {product.category || "Uncategorized"}
+                          {formatCategoryLabel(product.category)}
                         </div>
                         <h3>{product.name}</h3>
                       </div>
@@ -435,7 +446,7 @@ export default function SellerDashboardPage() {
                     </div>
                     <p>{product.description || "No description yet."}</p>
                     <div className="row-meta">
-                      <span>{product.stock ?? 0} in stock</span>
+                      <span>{product.stock ?? 0} available</span>
                       <span>{product.manufacturer || "No manufacturer"}</span>
                     </div>
                     <div className="row-actions">
@@ -460,7 +471,7 @@ export default function SellerDashboardPage() {
 
               {!products.length && (
                 <div className="empty-state">
-                  <h2>No products yet</h2>
+                  <h2>No dishes yet</h2>
                   <p>Create one on the left.</p>
                 </div>
               )}

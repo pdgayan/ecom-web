@@ -25,123 +25,114 @@ export default function CheckoutPage() {
           items: items.map((i) => ({
             productId: i.productId,
             name: i.name,
+          setPlacing(false);
             quantity: i.quantity,
             price: i.price,
           })),
         }),
       });
-      const order = await res.json();
-      if (!res.ok) throw new Error(order.error || "Failed to place order");
-
-      // Clear the cart after successful order
-      await fetch(`${CART_URL}/cart/${user.id}/clear`, { method: "DELETE" });
-
-      navigate("/order-confirm", { state: { order } });
+          <div className="empty-state card">
+            <div className="eyebrow">Checkout</div>
+            <h2>Nothing to checkout</h2>
+            <p style={{ marginBottom: "1rem" }}>Your basket appears to be empty.</p>
+            <button className="btn btn-primary" onClick={() => navigate("/cart")}>
+              Go to Basket
+            </button>
     } catch (err) {
       setError(err.message);
       setPlacing(false);
     }
   }
-
-  if (items.length === 0) {
-    return (
-      <div className="empty-state">
-        <h2>Nothing to checkout</h2>
-        <p style={{ marginBottom: "1rem" }}>Your cart appears to be empty.</p>
-        <button className="btn btn-primary" onClick={() => navigate("/cart")}>
-          Go to Cart
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <>
-      <h1 className="page-title">Checkout</h1>
-      <div className="checkout-layout">
-        {/* Left: item review */}
-        <div className="card" style={{ padding: "1.2rem" }}>
-          <h3 style={{ marginBottom: "1rem", fontSize: "1rem" }}>
-            Review Your Items
-          </h3>
-          {items.map((item) => (
-            <div
-              key={item.productId}
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                padding: "0.55rem 0",
-                borderBottom: "1px solid var(--border)",
-                fontSize: "0.88rem",
-              }}
-            >
-              <span>
-                {item.name} × {item.quantity}
-              </span>
-              <span>${(item.price * item.quantity).toFixed(2)}</span>
+        <div className="checkout-page">
+          <section className="catalog-hero card">
+            <div className="hero-copy">
+              <div className="eyebrow">Checkout</div>
+              <h1 className="page-title">Review and place your order</h1>
+              <p>Everything is ready. Confirm your basket and finish the order.</p>
             </div>
-          ))}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-end",
-              marginTop: "0.8rem",
-              fontWeight: 700,
-            }}
-          >
-            Total: ${total.toFixed(2)}
+            <div className="hero-metrics">
+              <div className="metric-card">
+                <span className="metric-value">{items.length}</span>
+                <span className="metric-label">Items</span>
+              </div>
+              <div className="metric-card accent">
+                <span className="metric-value">${total.toFixed(2)}</span>
+                <span className="metric-label">Order total</span>
+              </div>
+            </div>
+          </section>
+
+          <div className="checkout-layout">
+            <div className="card checkout-review-card">
+              <div className="section-head">
+                <h2>Review your dishes</h2>
+              </div>
+
+              <div className="checkout-review-list">
+                {items.map((item) => (
+                  <div key={item.productId} className="checkout-review-item">
+                    <div>
+                      <div className="product-card-badge">{item.category || "Dish"}</div>
+                      <div className="checkout-review-name">
+                        {item.name} × {item.quantity}
+                      </div>
+                    </div>
+                    <div className="price">
+                      ${(Number(item.price || 0) * item.quantity).toFixed(2)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="checkout-summary-box">
+              <div className="eyebrow">Summary</div>
+              <h3>Order summary</h3>
+              {items.map((item) => (
+                <div key={item.productId} className="summary-item">
+                  {item.image_url ? (
+                    <img
+                      src={item.image_url}
+                      alt={item.name}
+                      onError={(e) => {
+                        e.currentTarget.style.opacity = 0.65;
+                      }}
+                    />
+                  ) : (
+                    <div className="summary-fallback" />
+                  )}
+                  <div style={{ flex: "1 1 auto" }}>
+                    <div style={{ fontWeight: 700 }}>{item.name}</div>
+                    <div style={{ fontSize: "0.85rem", color: "var(--muted)" }}>
+                      Qty: {item.quantity}
+                    </div>
+                  </div>
+                  <div style={{ fontWeight: 700 }}>
+                    ${(Number(item.price || 0) * item.quantity).toFixed(2)}
+                  </div>
+                </div>
+              ))}
+              <div className="summary-total">
+                <span>Total</span>
+                <span>${total.toFixed(2)}</span>
+              </div>
+
+              <div className="summary-note">
+                Payment will be processed automatically via the payment service.
+              </div>
+
+              {error && <div className="alert alert-error">{error}</div>}
+
+              <button
+                className="btn btn-success btn-wide"
+                onClick={placeOrder}
+                disabled={placing}
+              >
+                {placing ? "Placing order…" : "Place Order"}
+              </button>
+            </div>
           </div>
         </div>
-
-        {/* Right: summary + CTA */}
-        <div className="checkout-summary-box">
-          <h3>Order Summary</h3>
-          {items.map((item) => (
-            <div key={item.productId} className="summary-item">
-              {item.image_url ? (
-                <img
-                  src={item.image_url}
-                  alt={item.name}
-                  onError={(e) => {
-                    e.currentTarget.style.opacity = 0.65;
-                  }}
-                />
-              ) : (
-                <div
-                  style={{
-                    width: 72,
-                    height: 54,
-                    background: "rgba(255,255,255,0.03)",
-                    borderRadius: 8,
-                  }}
-                />
-              )}
-              <div style={{ flex: "1 1 auto" }}>
-                <div style={{ fontWeight: 700 }}>{item.name}</div>
-                <div style={{ fontSize: "0.85rem", color: "var(--muted)" }}>
-                  Qty: {item.quantity}
-                </div>
-              </div>
-              <div style={{ fontWeight: 700 }}>
-                ${(Number(item.price || 0) * item.quantity).toFixed(2)}
-              </div>
-            </div>
-          ))}
-          <div className="summary-total">
-            <span>Total</span>
-            <span>${total.toFixed(2)}</span>
-          </div>
-
-          <div
-            style={{
-              marginTop: "1.2rem",
-              fontSize: "0.8rem",
-              color: "var(--muted)",
-              marginBottom: "1rem",
-            }}
-          >
-            💳 Payment will be processed automatically via the payment service.
-          </div>
 
           {error && <div className="alert alert-error">{error}</div>}
 

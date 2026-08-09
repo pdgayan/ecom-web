@@ -19,7 +19,7 @@ export default function Navbar() {
         to={isSellerRole ? "/dashboard" : "/products"}
         className="navbar-brand"
       >
-        Ecom Catalog
+        BlueBite
       </Link>
 
       <div className="navbar-links">
