@@ -1,3 +1,6 @@
+# The Project
+This is a simulation of how a microservices e-commerce application is deployed and operated on AWS. Six independently deployed services run on Amazon Elastic Kubernetes Service (EKS), with each service owning its own RDS PostgreSQL database for strict data isolation. The wider infrastructure leans on AWS native tooling throughout ECR for container image storage, S3 for static frontend hosting and product assets, Secrets Manager for credential management, and IAM with IRSA for fine grained, pod level access control, no long lived credentials anywhere in the system.
+
 # ecom-web
 
 React frontend and the CI/CD pipeline that deploys it. The application communicates with the backend microservices through a single API URL configured at build time via `VITE_API_URL`, which points to the ALB Ingress controller in front of the EKS cluster. When a change is pushed to `main`, GitHub Actions builds the Vite production bundle and syncs the output to an S3 bucket configured for static website hosting — no server required.
