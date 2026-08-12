@@ -80,6 +80,8 @@ export default function SellerDashboardPage() {
   const [formData, setFormData] = useState(emptyForm);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
@@ -116,6 +118,49 @@ export default function SellerDashboardPage() {
 
   function resetForm() {
     setFormData(emptyForm);
+    setSelectedFile(null);
+    setUploadingImage(false);
+    setError("");
+    setMessage("");
+  }
+
+  function handleFileChange(event) {
+    const file = event.target.files?.[0] || null;
+    setSelectedFile(file);
+    setError("");
+    setMessage("");
+  }
+
+  async function uploadImage(file) {
+    if (!file) {
+      return formData.image_url || "";
+    }
+
+    setUploadingImage(true);
+    setError("");
+    setMessage("Uploading image...");
+
+    const uploadFormData = new FormData();
+    uploadFormData.append("image", file);
+
+    const response = await fetch(`${CATALOG_URL}/products/upload`, {
+      method: "POST",
+      headers: token
+        ? {
+            Authorization: `Bearer ${token}`,
+          }
+        : {},
+      body: uploadFormData,
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Image upload failed");
+    }
+
+    setMessage("Image uploaded");
+    setFormData((current) => ({ ...current, image_url: data.imageUrl }));
+    return data.imageUrl;
   }
 
   async function handleSubmit(event) {
@@ -126,6 +171,12 @@ export default function SellerDashboardPage() {
 
     const payload = serializeProduct(formData);
     try {
+      let imageUrl = payload.image_url || "";
+
+      if (selectedFile) {
+        imageUrl = await uploadImage(selectedFile);
+      }
+
       const response = await fetch(
         editing
           ? `${CATALOG_URL}/products/${formData.id}`
@@ -136,7 +187,7 @@ export default function SellerDashboardPage() {
             "Content-Type": "application/json",
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
-          body: JSON.stringify(payload),
+          body: JSON.stringify({ ...payload, image_url: imageUrl }),
         },
       );
 
@@ -150,6 +201,7 @@ export default function SellerDashboardPage() {
       setError(err.message);
     } finally {
       setSaving(false);
+      setUploadingImage(false);
     }
   }
 
@@ -261,11 +313,11 @@ export default function SellerDashboardPage() {
                 />
               </label>
               <label className="form-field">
-                <span>Image URL</span>
+                <span>Upload image</span>
                 <input
-                  name="image_url"
-                  value={formData.image_url}
-                  onChange={handleChange}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
                 />
               </label>
               <label className="form-field">
@@ -393,12 +445,18 @@ export default function SellerDashboardPage() {
               </label>
             </div>
 
+            {formData.image_url && (
+              <div className="image-preview">
+                <img src={formData.image_url} alt="Selected preview" />
+              </div>
+            )}
+
             <button
               className="btn btn-primary btn-wide"
               type="submit"
-              disabled={saving}
+              disabled={saving || uploadingImage}
             >
-              {saving
+              {saving || uploadingImage
                 ? "Saving…"
                 : editing
                   ? "Update product"
